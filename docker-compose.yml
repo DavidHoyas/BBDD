@@ -1,0 +1,17 @@
+version: '3.1'
+ # Conexión: Localhost - usuario system/secret
+services:
+  dboracle:
+    image: gvenzl/oracle-xe:slim
+    container_name: oracle-xe
+    ports:
+      - "1521:1521"
+    expose:
+      - "1521"
+    env_file:
+      - ".env"
+    environment:
+      - APP_USER=${ORACLE_USER}
+      - APP_USER_PASSWORD=${ORACLE_USER_PASSWORD}
+      - ORACLE_PASSWORD=${ORACLE_PASSWORD}
+      - ORACLE_DATABASE=${ORACLE_DATABASE}
