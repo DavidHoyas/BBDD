@@ -17,6 +17,10 @@ public class InstitutoOracleXeDAOImp implements InstitutoDAO {
         conn = DriverManager.getConnection(String.format(URL, DATABSE_USER, DATABSE_PASS));
     }
 
+    public static void main(String[] args) {
+
+    }
+
     @Override
     public List<Alumno> listarAlumnos() throws SQLException {
         List<Alumno> instituto = new ArrayList<>();
