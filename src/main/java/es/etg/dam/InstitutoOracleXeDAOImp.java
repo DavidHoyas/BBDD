@@ -10,37 +10,62 @@ public class InstitutoOracleXeDAOImp implements InstitutoDAO {
 
     private Connection conn;
     private final String URL = "jdbc:oracle:thin:%s/%s@localhost:1521/XEPDB1";
-    private final String DATABSE_USER = "SYSTEM";
-    private final String DATABSE_PASS = "secret";
+    private final String DATABASE_USER = "SYSTEM";
+    private final String DATABASE_PASS = "secret";
 
     public InstitutoOracleXeDAOImp() throws Exception {
-        conn = DriverManager.getConnection(String.format(URL, DATABSE_USER, DATABSE_PASS));
+        conn = DriverManager.getConnection(
+                String.format(URL, DATABASE_USER, DATABASE_PASS)
+        );
     }
 
-    public static void main(String[] args) {
-
+    @Override
+    public void crearTablas() throws SQLException {
+        System.out.println("Creación de tablas en Oracle no implementada actualmente.");
     }
 
     @Override
     public List<Alumno> listarAlumnos() throws SQLException {
-        List<Alumno> instituto = new ArrayList<>();
-        instituto.add(new Alumno("Aaron", "Gomez", 20));
-        instituto.add(new Alumno("Alejandro", "Rodriguez", 20));
-        return instituto;
+        return new ArrayList<>();
     }
 
     @Override
     public int insertar(Alumno a) throws SQLException {
-        return 1;
+        return 0;
     }
 
     @Override
     public int actualizar(Alumno a) throws SQLException {
-        return 1;
+        return 0;
     }
 
     @Override
     public int borrar(Alumno a) throws SQLException {
-        return 1;
+        return 0;
+    }
+
+    @Override
+    public int insertarAsignatura(Asignatura as) throws SQLException {
+        return 0;
+    }
+
+    @Override
+    public int actualizarAsignatura(Asignatura as) throws SQLException {
+        return 0;
+    }
+
+    @Override
+    public List<Asignatura> listarAsignaturas() throws SQLException {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public void listarAlumnosConAsignaturas() throws SQLException {
+        System.out.println("Creación de tablas en Oracle no implementada actualmente.");
+    }
+
+    @Override
+    public Alumno consultar(String nombre) throws SQLException {
+        return null;
     }
 }

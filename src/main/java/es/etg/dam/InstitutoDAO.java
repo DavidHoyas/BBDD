@@ -5,15 +5,26 @@ import java.util.List;
 
 public interface InstitutoDAO {
 
-    // public void crearTablaAlumno() throws Exception;
-    // public void eliminarTablaAlumno() throws Exception;
-    public List<Alumno> listarAlumnos() throws SQLException;
+    void crearTablas() throws SQLException;
 
-    // public List<Alumno> listarAlumnos(int edad) throws SQLException;
-    public int insertar(Alumno a) throws SQLException;
+    List<Alumno> listarAlumnos() throws SQLException;
 
-    // public int insertar(List<Alumno> alumnos) throws SQLException;
-    public int actualizar(Alumno a) throws SQLException;
+    int insertar(Alumno a) throws SQLException;
 
-    public int borrar(Alumno a) throws SQLException;
+    int actualizar(Alumno a) throws SQLException;
+
+    int borrar(Alumno a) throws SQLException;
+
+    // ---- NUEVA TABLA ----
+    int insertarAsignatura(Asignatura as) throws SQLException;
+
+    int actualizarAsignatura(Asignatura as) throws SQLException;
+
+    List<Asignatura> listarAsignaturas() throws SQLException;
+
+    // Relación
+    void listarAlumnosConAsignaturas() throws SQLException;
+
+    // Consulta con parámetro
+    Alumno consultar(String nombre) throws SQLException;
 }

@@ -1,31 +1,65 @@
 package es.etg.dam;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class InstitutoMockDAOImp implements InstitutoDAO {
 
-    @Override
-    public List<Alumno> listarAlumnos() throws SQLException {
-        List<Alumno> instituto = new ArrayList<>();
-        instituto.add(new Alumno("David", "Oliva", 19));
-        instituto.add(new Alumno("Sergio", "Simon", 19));
-        return instituto;
+    private List<Alumno> alumnos = new ArrayList<>();
+    private List<Asignatura> asignaturas = new ArrayList<>();
+
+    public void crearTablas() {
     }
 
-    @Override
-    public int insertar(Alumno a) throws SQLException {
+    public List<Alumno> listarAlumnos() {
+        alumnos.add(new Alumno("David", "Oliva", 19));
+        alumnos.add(new Alumno("Sergio", "Simon", 19));
+        return alumnos;
+    }
+
+    public int insertar(Alumno a) {
+        alumnos.add(a);
         return 1;
     }
 
-    @Override
-    public int actualizar(Alumno a) throws SQLException {
+    public int actualizar(Alumno a) {
         return 1;
     }
 
-    @Override
-    public int borrar(Alumno a) throws SQLException {
+    public int borrar(Alumno a) {
         return 1;
+    }
+
+    public int insertarAsignatura(Asignatura as) {
+        asignaturas.add(as);
+        return 1;
+    }
+
+    public int actualizarAsignatura(Asignatura as) {
+        return 1;
+    }
+
+    public List<Asignatura> listarAsignaturas() {
+        return asignaturas;
+    }
+
+    public void listarAlumnosConAsignaturas() {
+        for (Alumno a : alumnos) {
+            System.out.println(a.getNombre());
+            for (Asignatura as : asignaturas) {
+                if (as.getNombreAlumno().equals(a.getNombre())) {
+                    System.out.println("  → " + as.getNombreAsignatura());
+                }
+            }
+        }
+    }
+
+    public Alumno consultar(String nombre) {
+        for (Alumno a : alumnos) {
+            if (a.getNombre().equals(nombre)) {
+                return a;
+            }
+        }
+        return null;
     }
 }
