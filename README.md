@@ -13,6 +13,30 @@ Proyecto en JAVA para gestionar una base de datos con varias implementaciones de
 
 ## Diagrama de tablas (PlantUML)
 
+```plantuml
+@startuml
+entity instituto {
+  * nombre : VARCHAR2(100) <<PK>>
+  --
+  apellido : VARCHAR2(100)
+  edad : NUMBER
+}
+
+entity asignaturas {
+  * id : NUMBER <<PK>>
+  --
+  nombre_asignatura : VARCHAR2(200)
+  nombre_alumno : VARCHAR2(100) <<FK>>
+}
+
+instituto ||--o{ asignaturas : "nombre -> nombre_alumno"
+@enduml
+```
+
+---
+
+## Diagrama (PlantUML)
+
 ![alt text](image.png)
 
 ---
