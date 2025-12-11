@@ -16,7 +16,11 @@
             "name": "jdbcinstituto",
             "database": "instituto",
             "username": "usuario",
-            "password": "usuario"
+            "password": "usuario",
+            "plantuml.server": "https://www.plantuml.com/plantuml",
+            "plantuml.render": "PlantUMLServer"
         }
+
     ]
+
 }
