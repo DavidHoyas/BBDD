@@ -33,15 +33,17 @@ public class InstitutoSQLiteDAOImp implements InstitutoDAO {
                 nombre TEXT PRIMARY KEY,
                 apellido TEXT,
                 edad INTEGER
+                PRIMARY KEY (nombre, apellidos)
             );
         """;
 
         String asignaturas = """
-            CREATE TABLE IF NOT EXISTS asignaturas (
+            CREATE TABLE asignaturas (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 nombre_asignatura TEXT,
                 nombre_alumno TEXT,
-                FOREIGN KEY (nombre_alumno) REFERENCES instituto(nombre)
+                CONSTRAINT fk_asig_alumno FOREIGN KEY (nombre_alumno, apellidos_alumno)
+                    REFERENCES alumnos(nombre, apellidos)
             );
         """;
 
