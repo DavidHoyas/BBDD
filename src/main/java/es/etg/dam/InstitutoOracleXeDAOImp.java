@@ -11,7 +11,7 @@ import java.util.List;
 
 public class InstitutoOracleXeDAOImp implements InstitutoDAO {
 
-    private Connection conn;
+    private final Connection conn;
     private final String URL = "jdbc:oracle:thin:%s/%s@localhost:1521/XEPDB1";
     private final String DATABASE_USER = "usuario";
     private final String DATABASE_PASS = "usuario";
@@ -62,19 +62,16 @@ public class InstitutoOracleXeDAOImp implements InstitutoDAO {
         final String query = "SELECT nombre, apellido, edad FROM instituto";
         List<Alumno> alumnos = new ArrayList<>();
 
-        PreparedStatement ps = conn.prepareStatement(query);
-        ResultSet rs = ps.executeQuery();
+        try (PreparedStatement ps = conn.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
 
-        while (rs.next()) {
-            String nombre = rs.getString("nombre");
-            String apellido = rs.getString("apellido");
-            int edad = rs.getInt("edad");
+            while (rs.next()) {
+                String nombre = rs.getString("nombre");
+                String apellido = rs.getString("apellido");
+                int edad = rs.getInt("edad");
 
-            alumnos.add(new Alumno(nombre, apellido, edad));
+                alumnos.add(new Alumno(nombre, apellido, edad));
+            }
         }
-
-        rs.close();
-        ps.close();
 
         return alumnos;
     }
@@ -82,71 +79,56 @@ public class InstitutoOracleXeDAOImp implements InstitutoDAO {
     @Override
     public int insertar(Alumno a) throws SQLException {
         final String sql = "INSERT INTO instituto (nombre, apellido, edad) VALUES (?, ?, ?)";
-        PreparedStatement ps = conn.prepareStatement(sql);
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, a.getNombre());
+            ps.setString(2, a.getApellido());
+            ps.setInt(3, a.getEdad());
 
-        ps.setString(1, a.getNombre());
-        ps.setString(2, a.getApellido());
-        ps.setInt(3, a.getEdad());
-
-        int filas = ps.executeUpdate();
-        ps.close();
-
-        return filas;
+            return ps.executeUpdate();
+        }
     }
 
     @Override
     public int actualizar(Alumno a) throws SQLException {
         final String sql = "UPDATE instituto SET apellido=?, edad=? WHERE nombre=?";
-        PreparedStatement ps = conn.prepareStatement(sql);
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, a.getApellido());
+            ps.setInt(2, a.getEdad());
+            ps.setString(3, a.getNombre());
 
-        ps.setString(1, a.getApellido());
-        ps.setInt(2, a.getEdad());
-        ps.setString(3, a.getNombre());
-
-        int filas = ps.executeUpdate();
-        ps.close();
-
-        return filas;
+            return ps.executeUpdate();
+        }
     }
 
     @Override
     public int borrar(Alumno a) throws SQLException {
         final String sql = "DELETE FROM instituto WHERE nombre=?";
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setString(1, a.getNombre());
-
-        int filas = ps.executeUpdate();
-        ps.close();
-
-        return filas;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, a.getNombre());
+            return ps.executeUpdate();
+        }
     }
 
     @Override
     public int insertarAsignatura(Asignatura as) throws SQLException {
         String sql = "INSERT INTO asignaturas(nombre_asignatura, nombre_alumno) VALUES (?,?)";
-        PreparedStatement ps = conn.prepareStatement(sql);
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, as.getNombreAsignatura());
+            ps.setString(2, as.getNombreAlumno());
 
-        ps.setString(1, as.getNombreAsignatura());
-        ps.setString(2, as.getNombreAlumno());
-
-        int filas = ps.executeUpdate();
-        ps.close();
-
-        return filas;
+            return ps.executeUpdate();
+        }
     }
 
     @Override
     public int actualizarAsignatura(Asignatura as) throws SQLException {
         String sql = "UPDATE asignaturas SET nombre_asignatura=? WHERE id=?";
-        PreparedStatement ps = conn.prepareStatement(sql);
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, as.getNombreAsignatura());
+            ps.setInt(2, as.getId());
 
-        ps.setString(1, as.getNombreAsignatura());
-        ps.setInt(2, as.getId());
-
-        int filas = ps.executeUpdate();
-        ps.close();
-
-        return filas;
+            return ps.executeUpdate();
+        }
     }
 
     @Override
@@ -154,19 +136,16 @@ public class InstitutoOracleXeDAOImp implements InstitutoDAO {
         List<Asignatura> lista = new ArrayList<>();
         String sql = "SELECT id, nombre_asignatura, nombre_alumno FROM asignaturas";
 
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ResultSet rs = ps.executeQuery();
+        try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
-        while (rs.next()) {
-            lista.add(new Asignatura(
-                    rs.getInt("id"),
-                    rs.getString("nombre_asignatura"),
-                    rs.getString("nombre_alumno")
-            ));
+            while (rs.next()) {
+                lista.add(new Asignatura(
+                        rs.getInt("id"),
+                        rs.getString("nombre_asignatura"),
+                        rs.getString("nombre_alumno")
+                ));
+            }
         }
-
-        rs.close();
-        ps.close();
 
         return lista;
     }
@@ -175,41 +154,32 @@ public class InstitutoOracleXeDAOImp implements InstitutoDAO {
     public void listarAlumnosConAsignaturas() throws SQLException {
         String sql = "SELECT i.nombre, a.nombre_asignatura FROM instituto i JOIN asignaturas a ON i.nombre = a.nombre_alumno";
 
-        Statement st = conn.createStatement();
-        ResultSet rs = st.executeQuery(sql);
+        try (Statement st = conn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
 
-        while (rs.next()) {
-            System.out.println(
-                    rs.getString("nombre") + " → "
-                    + rs.getString("nombre_asignatura")
-            );
+            System.out.println("\n✓ Alumnos con asignaturas:");
+            while (rs.next()) {
+                System.out.println("  - " + rs.getString("nombre") + " → "
+                        + rs.getString("nombre_asignatura"));
+            }
         }
-
-        rs.close();
-        st.close();
     }
 
     @Override
     public Alumno consultar(String nombre) throws SQLException {
         String sql = "SELECT nombre, apellido, edad FROM instituto WHERE nombre=?";
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setString(1, nombre);
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, nombre);
 
-        ResultSet rs = ps.executeQuery();
-
-        if (rs.next()) {
-            Alumno a = new Alumno(
-                    rs.getString("nombre"),
-                    rs.getString("apellido"),
-                    rs.getInt("edad")
-            );
-            rs.close();
-            ps.close();
-            return a;
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Alumno(
+                            rs.getString("nombre"),
+                            rs.getString("apellido"),
+                            rs.getInt("edad")
+                    );
+                }
+            }
         }
-
-        rs.close();
-        ps.close();
         return null;
     }
 }

@@ -2,9 +2,9 @@ package es.etg.dam;
 
 public class Asignatura {
 
-    private int id;
-    private String nombreAsignatura;
-    private String nombreAlumno; // FK contra Alumno.nombre
+    private final int id;
+    private final String nombreAsignatura;
+    private final String nombreAlumno; // FK contra Alumno.nombre
 
     public Asignatura(int id, String nombreAsignatura, String nombreAlumno) {
         this.id = id;
