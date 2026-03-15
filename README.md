@@ -1,49 +1,55 @@
 # Instituto
 
-Proyecto en JAVA para gestionar una base de datos con varias implementaciones de acceso a datos (SQLite, Oracle XE y Mock).
+Proyecto en **JAVA** para gestionar una base de datos con **múltiples implementaciones** de acceso a datos (**SQLite**, **Oracle XE**, **Mock** y **🆕 Hibernate ORM**).
+
+---
+
+## NUEVA IMPLEMENTACIÓN: Hibernate ORM 6.4.4
+
+**Hibernate** se ha integrado como **cuarta implementación** del patrón **DAO**, proporcionando **mapeo objeto-relacional (ORM)** con **MySQL Docker** (puerto 3307).
 
 ---
 
 ## Estructura
 
-- Paquete principal: `es.etg.dam`
-- Clases relevantes: `Main`, `Alumno`, `Asignatura`, `InstitutoDAO`, `InstitutoSQLiteDAOImp`, `InstitutoOracleXeDAOImp`, `InstitutoMockDAOImp`.
+- **Paquete principal**: `es.etg.dam`
+- **Clases relevantes**:
+  ```mermaid
+  graph TD
+      Main --> InstitutoDAOFactory
+      InstitutoDAOFactory --> InstitutoMockDAOImp
+      InstitutoDAOFactory --> InstitutoSQLiteDAOImp
+      InstitutoDAOFactory --> InstitutoOracleXeDAOImp  
+      InstitutoDAOFactory --> InstitutoHibernateDAOImp
+      InstitutoHibernateDAOImp --> HibernateUtil
+      InstitutoHibernateDAOImp --> AlumnoHibernate
+      InstitutoHibernateDAOImp --> AsignaturaHibernate
+  ```    
 
 ---
 
-## Diagrama de tablas (PlantUML)
+## DDL por Base de Datos
 
-```plantuml
-@startuml
-entity instituto {
-  * nombre : VARCHAR2(100) <<PK>>
-  --
-  apellido : VARCHAR2(100)
-  edad : NUMBER
-}
+### MySQL (Hibernate - Auto-generado)
 
-entity asignaturas {
-  * id : NUMBER <<PK>>
-  --
-  nombre_asignatura : VARCHAR2(200)
-  nombre_alumno : VARCHAR2(100) <<FK>>
-}
+```sql
+CREATE TABLE alumno (
+    id_alumno bigint NOT NULL AUTO_INCREMENT,
+    apellido varchar(100) NOT NULL,
+    edad integer,
+    nombre varchar(100) NOT NULL,
+    PRIMARY KEY (id_alumno)
+) ENGINE=InnoDB
 
-instituto ||--o{ asignaturas : "nombre -> nombre_alumno"
-@enduml
+CREATE TABLE asignatura (
+    id int NOT NULL AUTO_INCREMENT,
+    nombre_alumno varchar(100) NOT NULL,
+    nombre_asignatura varchar(200) NOT NULL,
+    PRIMARY KEY (id)
+) ENGINE=InnoDB
 ```
 
----
-
-## Diagrama (PlantUML)
-
-![alt text](image.png)
-
----
-
-## DDL de ejemplo
-
-Oracle:
+### Oracle XE
 
 ```sql
 CREATE TABLE instituto (
@@ -60,7 +66,7 @@ CREATE TABLE asignaturas (
 );
 ```
 
-SQLite:
+### SQLITE
 
 ```sql
 CREATE TABLE instituto (
@@ -79,23 +85,126 @@ CREATE TABLE asignaturas (
 
 ---
 
-## Notas
+## Hibernate ORM
 
-### Características del proyecto
-
-- Implementación de patrón **DAO** (Data Access Object) con múltiples backends.
-- Soporte para **SQLite** y **Oracle XE**.
-- Métodos CRUD para gestionar `Alumno` (create, update, delete).
-- Métodos para gestionar `Asignatura` y listar relaciones alumno-asignatura.
-- Uso de **PreparedStatement** para prevenir SQL injection.
-- Interfaz **InstitutoDAO** centralizada para cambiar implementaciones fácilmente.
-
-### Requisitos previos
-
-- **Java 21**.
-- **Maven 3.9+** para compilar y ejecutar el proyecto.
-- **SQLite JDBC Driver** (incluido en `pom.xml`).
-- **Oracle JDBC Driver** (ojdbc11 o compatible, según versión de Oracle).
-- Para `InstitutoOracleXeDAOImp`: conexión disponible a una instancia de **Oracle XE** con usuario y contraseña configurados.
+Hibernate es un framework Object-Relational Mapping (ORM) que elimina el 85% del código SQL convirtiendo:
 
 
+- Objetos Java ↔ Tablas SQL
+- Clases → Tablas
+- Atributos → Columnas
+- Objetos → Filas
+
+### Características Implementadas
+
+| Operación | Código Hibernate       | SQL Generado          |
+| --------- | ---------------------- | --------------------- |
+| INSERT    | session.save(alumno)   | INSERT INTO alumno... |
+| LISTAR    | FROM AlumnoHibernate   | SELECT * FROM alumno  |
+| JOIN      | FROM a JOIN s WHERE... | SELECT a,b FROM...    |
+| UPDATE    | session.update(alumno) | UPDATE alumno SET...  |
+
+### Configuración Programática (Sin XML)
+
+```java
+// HibernateUtil.java - 100% Java
+Configuration config = new Configuration();
+config.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3307/institutodb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true");
+config.setProperty("hibernate.hbm2ddl.auto", "update");
+config.addAnnotatedClass(AlumnoHibernate.class);
+config.addAnnotatedClass(AsignaturaHibernate.class);
+```
+
+---
+
+## Ejemplos de Uso
+
+### INSERT
+
+```java
+AlumnoHibernate ah = new AlumnoHibernate("Fernando", "Alonso", 20);
+session.save(ah); // → INSERT automático
+tx.commit();
+```
+
+### HQL - Listar Todos
+
+```java
+List<AlumnoHibernate> alumnos = session
+    .createQuery("FROM AlumnoHibernate", AlumnoHibernate.class)
+    .list();
+```
+
+### JOIN Avanzado
+
+```java
+List<Object[]> resultados = session.createQuery("""
+    SELECT a.nombre, a.apellido, s.nombreAsignatura 
+    FROM AlumnoHibernate a, AsignaturaHibernate s 
+    WHERE a.nombre = s.nombreAlumno
+    """, Object[].class).list();
+```
+
+---
+
+## Requisitos Previos
+
+- Java 21
+- Maven 3.9+
+- SQLite JDBC (pom.xml)
+- Oracle JDBC (ojdbc11)
+- MySQL Docker
+
+```bash
+version: '3.8'
+
+services:
+  // MYSQL PARA HIBERNATE
+  mysql-hibernate:
+    image: mysql:8.0
+    container_name: instituto-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+
+  // ORACLE XE CON TUS VALORES .env
+  dboracle:
+    image: gvenzl/oracle-xe:slim
+    container_name: oracle-xe
+    ports:
+      - "1521:1521"
+    environment:
+      APP_USER: ${ORACLE_USER}
+      APP_USER_PASSWORD: ${ORACLE_USER_PASSWORD}
+      ORACLE_PASSWORD: ${ORACLE_PASSWORD}
+      ORACLE_DATABASE: ${ORACLE_DATABASE}
+    volumes:
+      - oracle_data:/opt/oracle/oradata
+
+volumes:
+  mysql_data:
+  oracle_data:
+```
+
+---
+
+## Ejecución
+
+```bash
+mvn clean compile exec:java
+```
+
+### Menú interactivo
+
+1. MOCK
+2. SQLITE  
+3. ORACLE
+4. HIBERNATE
