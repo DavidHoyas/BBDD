@@ -4,7 +4,7 @@ public class Asignatura {
 
     private final int id;
     private final String nombreAsignatura;
-    private final String nombreAlumno; // FK contra Alumno.nombre
+    private final String nombreAlumno;
 
     public Asignatura(int id, String nombreAsignatura, String nombreAlumno) {
         this.id = id;

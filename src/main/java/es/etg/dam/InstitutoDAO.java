@@ -15,16 +15,13 @@ public interface InstitutoDAO {
 
     int borrar(Alumno a) throws SQLException;
 
-    // ---- NUEVA TABLA ----
     int insertarAsignatura(Asignatura as) throws SQLException;
 
     int actualizarAsignatura(Asignatura as) throws SQLException;
 
     List<Asignatura> listarAsignaturas() throws SQLException;
 
-    // Relación
     void listarAlumnosConAsignaturas() throws SQLException;
 
-    // Consulta con parámetro
     Alumno consultar(String nombre) throws SQLException;
 }

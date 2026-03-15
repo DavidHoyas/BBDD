@@ -33,7 +33,6 @@ public class InstitutoSQLiteDAOImp implements InstitutoDAO {
 
     @Override
     public void crearTablas() throws SQLException {
-        // Eliminar tablas existentes con esquema antiguo (si las hay)
         conn.createStatement().execute("DROP TABLE IF EXISTS asignaturas;");
         conn.createStatement().execute("DROP TABLE IF EXISTS instituto;");
 
@@ -80,7 +79,6 @@ public class InstitutoSQLiteDAOImp implements InstitutoDAO {
 
     @Override
     public int insertar(Alumno a) throws SQLException {
-        // Comprobar si el alumno ya existe para evitar violación de UNIQUE/PK
         final String checkSql = "SELECT COUNT(*) FROM instituto WHERE nombre=? AND apellido=?";
         try (PreparedStatement psCheck = conn.prepareStatement(checkSql)) {
             psCheck.setString(1, a.getNombre());

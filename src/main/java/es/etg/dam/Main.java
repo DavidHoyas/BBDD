@@ -13,10 +13,10 @@ public class Main {
             System.out.println("1 - MOCK");
             System.out.println("2 - SQLITE");
             System.out.println("3 - ORACLE");
-            System.out.print("Seleccione opción (1-3): ");
+            System.out.println("4 - HIBERNATE");
+            System.out.print("Seleccione opción (1-4): ");
 
             int tipo = Integer.parseInt(sc.nextLine().trim());
-
             InstitutoDAO dao = switch (tipo) {
                 case 1 ->
                     InstitutoDAOFactory.obtenerDAO(Modo.MOCK);
@@ -24,8 +24,10 @@ public class Main {
                     InstitutoDAOFactory.obtenerDAO(Modo.SQLITE);
                 case 3 ->
                     InstitutoDAOFactory.obtenerDAO(Modo.ORACLE);
+                case 4 ->
+                    InstitutoDAOFactory.obtenerDAO(Modo.HIBERNATE);
                 default ->
-                    throw new IllegalArgumentException("Opción inválida");
+                    throw new IllegalArgumentException("Opción inválida (1-4)");
             };
 
             String opcion;
