@@ -1,6 +1,6 @@
 # Instituto
 
-Proyecto en **JAVA** para gestionar una base de datos con **múltiples implementaciones** de acceso a datos (**SQLite**, **Oracle XE**, **Mock** y **🆕 Hibernate ORM**).
+Proyecto en **JAVA** para gestionar una base de datos con **múltiples implementaciones** de acceso a datos (**SQLite**, **Oracle XE**, **Mock** y **Hibernate ORM**).
 
 ---
 
